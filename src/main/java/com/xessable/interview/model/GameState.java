@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 
 public class GameState {
 
-    private final boolean finished;
+    private boolean finished;
     private final Integer target;
     private Integer guessCount;
-    private final Feedback lastFeedback;
+    private Feedback lastFeedback;
     private final LocalDateTime startedAt;
-    private final LocalDateTime finishedAt;
+    private LocalDateTime finishedAt;
 
     public GameState(Integer target) {
         this.target = target;
@@ -50,5 +50,17 @@ public class GameState {
 
     public void resetCounter() {
         this.guessCount = 0;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+
+    public void setLastFeedback(Feedback lastFeedback) {
+        this.lastFeedback = lastFeedback;
+    }
+
+    public void setFinishedAt(LocalDateTime finishedAt) {
+        this.finishedAt = finishedAt;
     }
 }

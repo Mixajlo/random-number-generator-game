@@ -2,11 +2,13 @@ package com.xessable.interview.service.impl;
 
 import com.xessable.interview.api.dto.GuessedNumber;
 import com.xessable.interview.api.exceptions.NoGameFoundException;
+import com.xessable.interview.model.Feedback;
 import com.xessable.interview.model.GameState;
 import com.xessable.interview.service.NumberGeneratorService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -24,15 +26,28 @@ public class IMNumberGeneratorService implements NumberGeneratorService {
     }
 
     @Override
-    public String guessNumber(GuessedNumber number, HttpSession session) {
+    public GameState guessNumber(GuessedNumber number, HttpSession session) {
         GameState state = getGameState(session);
         state.incrementGuessCount();
-        return "Number guessed " + number.number() + " with failed tries " + state.getGuessCount();
+        if (number.number().equals(state.getTarget())) {
+            state.setLastFeedback(Feedback.CORRECT);
+            state.setFinished(true);
+            state.setFinishedAt(LocalDateTime.now());
+        } else if (number.number() > state.getTarget()) {
+            state.setLastFeedback(Feedback.TOO_HIGH);
+        } else {
+            state.setLastFeedback(Feedback.TOO_LOW);
+        }
+        return state;
     }
 
     private GameState getGameState(HttpSession session) {
-        if(games.containsKey(session.getId())) {
-            return games.get(session.getId());
+        if (games.containsKey(session.getId())) {
+            GameState gameState = games.get(session.getId());
+            if (gameState.isFinished()) {
+                throw new NoGameFoundException("Game is already finished. Please start a new game");
+            }
+            return gameState;
         }
         throw new NoGameFoundException("No game started");
     }
