@@ -1,6 +1,7 @@
 package com.xessable.interview.service.impl;
 
 import com.xessable.interview.api.dto.GuessedNumber;
+import com.xessable.interview.api.exceptions.NoGameFoundException;
 import com.xessable.interview.model.GameState;
 import com.xessable.interview.service.NumberGeneratorService;
 import jakarta.servlet.http.HttpSession;
@@ -24,16 +25,23 @@ public class IMNumberGeneratorService implements NumberGeneratorService {
 
     @Override
     public String guessNumber(GuessedNumber number, HttpSession session) {
-        GameState state = games.get(session.getId());
+        GameState state = getGameState(session);
         state.incrementGuessCount();
         return "Number guessed " + number.number() + " with failed tries " + state.getGuessCount();
     }
 
+    private GameState getGameState(HttpSession session) {
+        if(games.containsKey(session.getId())) {
+            return games.get(session.getId());
+        }
+        throw new NoGameFoundException("No game started");
+    }
+
     @Override
     public String resetGame(HttpSession session) {
-        GameState state = games.get(session.getId());
+        GameState state = getGameState(session);
         if (state == null) {
-            return "No game found for session " + session.getId();
+            throw new NoGameFoundException("No game found for session " + session.getId());
         }
         state.resetCounter();
         return "Reset game. New random number is " + generateRandomNumber() + " in session " + session.getId();

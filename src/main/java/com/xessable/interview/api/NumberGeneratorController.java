@@ -4,6 +4,7 @@ import com.xessable.interview.api.dto.GuessedNumber;
 import com.xessable.interview.service.NumberGeneratorService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,7 @@ public class NumberGeneratorController {
     }
 
     @PostMapping
-    public String guessNumber(@RequestBody GuessedNumber number, HttpSession session) {
+    public String guessNumber(@RequestBody @Valid GuessedNumber number, HttpSession session) {
         return numberGeneratorService.guessNumber(number, session);
     }
 
