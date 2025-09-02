@@ -22,16 +22,16 @@ public class NumberGeneratorController {
 
     @GetMapping
     public String startNewGame(HttpSession session) {
-        return numberGeneratorService.startNewGame(session.getId());
+        return numberGeneratorService.startNewGame(session);
     }
 
     @PostMapping
     public String guessNumber(@RequestBody GuessedNumber number, HttpSession session) {
-        return numberGeneratorService.guessNumber(number, session.getId());
+        return numberGeneratorService.guessNumber(number, session);
     }
 
     @GetMapping("/reset")
     public String resetGame(HttpServletRequest request) {
-        return numberGeneratorService.resetGame(request.getSession().getId());
+        return numberGeneratorService.resetGame(request.getSession());
     }
 }

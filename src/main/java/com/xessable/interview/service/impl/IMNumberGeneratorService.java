@@ -11,18 +11,18 @@ import java.util.Random;
 public class IMNumberGeneratorService implements NumberGeneratorService {
 
     @Override
-    public String startNewGame(String sessionId) {
-        return "New game started. Random number is " + generateRandomNumber()+ " in session " + sessionId;
+    public String startNewGame(HttpSession session) {
+        return "New game started. Random number is " + generateRandomNumber() + " in session " + session.getId();
     }
 
     @Override
-    public String guessNumber(GuessedNumber number, String sessionId) {
-        return "Number guessed " + number.number() + " in session " + sessionId;
+    public String guessNumber(GuessedNumber number, HttpSession session) {
+        return "Number guessed " + number.number() + " in session " + session.getId();
     }
 
     @Override
-    public String resetGame(String sessionId) {
-        return "Reset game. New random number is " + generateRandomNumber()+ " in session " + sessionId;
+    public String resetGame(HttpSession session) {
+        return "Reset game. New random number is " + generateRandomNumber() + " in session " + session.getId();
     }
 
     private Integer generateRandomNumber() {
