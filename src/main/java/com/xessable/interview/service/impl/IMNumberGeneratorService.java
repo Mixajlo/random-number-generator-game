@@ -1,27 +1,41 @@
 package com.xessable.interview.service.impl;
 
 import com.xessable.interview.api.dto.GuessedNumber;
+import com.xessable.interview.model.GameState;
 import com.xessable.interview.service.NumberGeneratorService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Service
 public class IMNumberGeneratorService implements NumberGeneratorService {
 
+    private final ConcurrentMap<String, GameState> games = new ConcurrentHashMap<>();
+
     @Override
     public String startNewGame(HttpSession session) {
-        return "New game started. Random number is " + generateRandomNumber() + " in session " + session.getId();
+        int randomNumber = generateRandomNumber();
+        games.put(session.getId(), new GameState(randomNumber));
+        return "New game started. Random number is " + randomNumber + " in session " + session.getId();
     }
 
     @Override
     public String guessNumber(GuessedNumber number, HttpSession session) {
-        return "Number guessed " + number.number() + " in session " + session.getId();
+        GameState state = games.get(session.getId());
+        state.incrementGuessCount();
+        return "Number guessed " + number.number() + " with failed tries " + state.getGuessCount();
     }
 
     @Override
     public String resetGame(HttpSession session) {
+        GameState state = games.get(session.getId());
+        if (state == null) {
+            return "No game found for session " + session.getId();
+        }
+        state.resetCounter();
         return "Reset game. New random number is " + generateRandomNumber() + " in session " + session.getId();
     }
 
