@@ -2,7 +2,8 @@ package com.xessable.interview.api;
 
 import com.xessable.interview.api.dto.GuessedNumber;
 import com.xessable.interview.service.NumberGeneratorService;
-import com.xessable.interview.service.impl.IMNumberGeneratorService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,12 +21,17 @@ public class NumberGeneratorController {
     }
 
     @GetMapping
-    public String startNewGame() {
-        return "Greetings from Spring Boot!";
+    public String startNewGame(HttpSession session) {
+        return numberGeneratorService.startNewGame(session.getId());
     }
 
     @PostMapping
-    public String guessNumber(@RequestBody GuessedNumber number) {
-        return numberGeneratorService.guessNumber(number);
+    public String guessNumber(@RequestBody GuessedNumber number, HttpSession session) {
+        return numberGeneratorService.guessNumber(number, session.getId());
+    }
+
+    @GetMapping("/reset")
+    public String resetGame(HttpServletRequest request) {
+        return numberGeneratorService.resetGame(request.getSession().getId());
     }
 }

@@ -4,7 +4,7 @@ import com.xessable.interview.api.dto.GuessedNumber;
 
 public interface NumberGeneratorService {
 
-    String startNewGame();
-    String generateNumber();
-    String guessNumber(GuessedNumber number);
+    String startNewGame(String sessionId);
+    String guessNumber(GuessedNumber number, String sessionId);
+    String resetGame(String sessionId);
 }
