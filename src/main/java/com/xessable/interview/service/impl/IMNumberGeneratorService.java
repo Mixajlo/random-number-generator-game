@@ -28,6 +28,9 @@ public class IMNumberGeneratorService implements NumberGeneratorService {
     @Override
     public GameState guessNumber(GuessedNumber number, HttpSession session) {
         GameState state = getGameState(session);
+        if (state.isFinished()) {
+            throw new NoGameFoundException("Game is already finished. Please start a new game");
+        }
         state.incrementGuessCount();
         if (number.number().equals(state.getTarget())) {
             state.setLastFeedback(Feedback.CORRECT);
@@ -43,23 +46,15 @@ public class IMNumberGeneratorService implements NumberGeneratorService {
 
     private GameState getGameState(HttpSession session) {
         if (games.containsKey(session.getId())) {
-            GameState gameState = games.get(session.getId());
-            if (gameState.isFinished()) {
-                throw new NoGameFoundException("Game is already finished. Please start a new game");
-            }
-            return gameState;
+            return games.get(session.getId());
         }
         throw new NoGameFoundException("No game started");
     }
 
     @Override
     public String resetGame(HttpSession session) {
-        GameState state = getGameState(session);
-        if (state == null) {
-            throw new NoGameFoundException("No game found for session " + session.getId());
-        }
-        state.resetCounter();
-        return "Reset game. New random number is " + generateRandomNumber() + " in session " + session.getId();
+        GameState state = games.put(session.getId(), new GameState(generateRandomNumber()));
+        return "Reset game. New random number is " + state.getTarget() + " in session " + session.getId();
     }
 
     private Integer generateRandomNumber() {
