@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      dockerfile: ./docker/Dockerfile
+    container_name: guessing-game
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

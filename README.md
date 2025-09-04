@@ -14,3 +14,8 @@ To run the application, execute the following command in terminal
 ```
 ./mvnw spring-boot:run
 ```
+
+If you have docker installed on your machine, you can run the application as a container
+```
+docker compose up -d
+```
